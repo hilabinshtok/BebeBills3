@@ -1,0 +1,337 @@
+@font-face {
+  font-family: 'bitMatrix-C1';
+  src: url('/fonts/bitMatrix-C1.ttf') format('truetype'),
+       url('/fonts/bitMatrix-C1.woff2') format('woff2'),
+       url('/fonts/bitMatrix-C1.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Page background = same navy as the receipt image margins */
+html, body {
+  min-height: 100vh;
+  background: #0C213F;
+}
+
+body {
+  font-family: 'bitMatrix-C1', monospace;
+  font-size: 11px;
+  color: black;
+}
+
+/* ─── Phone-width shell, centered on desktop ─── */
+.app-shell {
+  max-width: 390px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  /* Receipt image fills the entire shell (header + main + footer) */
+  background-image: url('/receipt.jpg');
+  background-size: 100% 100%;   /* stretch to fill shell height */
+  background-repeat: no-repeat;
+}
+
+/* ─── Header ─── */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 5%;           /* same 10% inset as receipt margins */
+  background: #0C213F;
+  border-bottom: none;
+  color: white;
+}
+
+.app-header h1 {
+  font-size: 16px;
+  font-weight: normal;
+  color: white;
+}
+
+/* ─── Main content — sits inside the white paper area ─── */
+.app-main {
+  flex: 1;
+  padding: 16px 5%;            /* 5% = receipt paper margin */
+  background: transparent;
+}
+
+/* ─── Footer ─── */
+.app-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 5%;
+  background: #0C213F;
+  border-top: none;
+  color: white;
+}
+
+/* ─── Buttons (default: light context) ─── */
+button {
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  background: white;
+  border: 1px solid black;
+  padding: 4px 10px;
+  color: black;
+}
+
+button:hover {
+  background: #f0f0f0;
+}
+
+button.link-btn {
+  border: none;
+  padding: 0;
+  background: none;
+  text-decoration: underline;
+  color: inherit;
+  font-size: 10px;
+}
+
+button.link-btn:hover {
+  background: none;
+}
+
+/* Footer button: dark background → white border + text */
+.app-footer button {
+  background: transparent;
+  border: 1px solid white;
+  color: white;
+}
+
+.app-footer button:hover {
+  background: rgba(255,255,255,0.12);
+}
+
+/* ─── Inputs ─── */
+input, select {
+  font-family: inherit;
+  font-size: 14px;
+  border: 1px solid black;
+  padding: 4px 6px;
+  background: white;
+  color: black;
+}
+
+input:focus, select:focus {
+  outline: 2px solid black;
+}
+
+/* ─── Auth / Landing ─── */
+.landing {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 40px 0;
+}
+
+.landing-panel {
+  border: 1px solid black;
+  padding: 20px;
+  background: white;
+}
+
+.landing-panel h2 {
+  font-size: 15px;
+  margin-bottom: 14px;
+}
+
+.landing-panel.dimmed {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.form-field label {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.form-field input, .form-field select {
+  width: 100%;
+}
+
+.form-error {
+  color: red;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.form-actions {
+  margin-top: 10px;
+}
+
+/* ─── Expense table ─── */
+.expense-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.expense-table th {
+  text-align: left;
+  border-bottom: 1px solid black;
+  padding: 3px 3px;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.expense-table td {
+  padding: 3px 3px;
+  border-bottom: none;
+  vertical-align: middle;
+  font-size: 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.expense-table td:first-child {
+  white-space: normal;
+  text-overflow: unset;
+  overflow: visible;
+  word-break: break-word;
+}
+
+.expense-table col.col-desc    { width: 30%; }
+.expense-table col.col-paid    { width: 8%; }
+.expense-table col.col-amount  { width: 14%; }
+.expense-table col.col-owes    { width: 18%; }
+.expense-table col.col-date    { width: 18%; }
+.expense-table col.col-actions { width: 10%; }
+
+.row-toggle {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0 3px 0 0;
+  font-family: inherit;
+  font-size: 11px;
+}
+
+.row-toggle:hover {
+  background: none;
+}
+
+.sub-row td:first-child {
+  padding-left: 16px;
+}
+
+.add-subitem-row td {
+  padding: 4px 4px 4px 16px;
+}
+
+.add-row {
+  margin-top: 10px;
+}
+
+/* ─── Modal ─── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.modal {
+  background: white;
+  border: 1px solid black;
+  padding: 20px;
+  width: 100%;
+  max-width: 360px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal h2 {
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 14px;
+}
+
+.modal-section {
+  margin-bottom: 20px;
+}
+
+.modal-section h3 {
+  font-size: 13px;
+  font-weight: bold;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 4px;
+  margin-bottom: 10px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+/* ─── Expense form ─── */
+.expense-form .split-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.expense-form .toggle-group {
+  display: flex;
+}
+
+.expense-form .toggle-group button {
+  border-right: none;
+}
+
+.expense-form .toggle-group button:last-child {
+  border-right: 1px solid black;
+}
+
+.expense-form .toggle-group button.active {
+  background: black;
+  color: white;
+}
+
+/* ─── Settings ─── */
+.settings-data-btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.settlements-list {
+  margin-top: 10px;
+}
+
+.settlement-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.note-text {
+  font-size: 12px;
+  color: #555;
+}
