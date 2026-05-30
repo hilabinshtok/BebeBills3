@@ -5,8 +5,9 @@ function getSession() {
 }
 
 async function handleError(res) {
+  const text = await res.text();
   let msg;
-  try { msg = (await res.json()).error; } catch { msg = await res.text(); }
+  try { msg = JSON.parse(text).error; } catch { msg = text; }
   throw new Error(msg || 'Something went wrong');
 }
 
