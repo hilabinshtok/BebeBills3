@@ -40,6 +40,49 @@ body {
   background-repeat: no-repeat;
 }
 
+/* ─── Mobile: full-width cover background, fixed header/footer ─── */
+@media (max-width: 429px) {
+  .app-shell {
+    background: transparent;
+    position: relative;
+  }
+
+  /* Fixed background layer that always fills the viewport */
+  .app-shell::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url('/receipt.jpg');
+    background-size: 100% auto;
+    background-position: center top;
+    background-repeat: no-repeat;
+    z-index: 0;
+  }
+
+  .app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+  }
+
+  .app-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+  }
+
+  .app-main {
+    position: relative;
+    z-index: 1;
+    padding-top: calc(16px + 44px);   /* existing padding + fixed header height */
+    padding-bottom: calc(16px + 44px); /* existing padding + fixed footer height */
+  }
+}
+
 /* ─── Header ─── */
 .app-header {
   display: flex;
