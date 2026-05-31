@@ -3,20 +3,24 @@ const router = express.Router();
 const { query } = require('../db');
 
 router.get('/', async (req, res) => {
-  const usersResult = await query(`SELECT COUNT(*) as count FROM users`);
-  const count = parseInt(usersResult.rows[0].count, 10);
-  const is_auth_setup = count > 0;
+  try {
+    const usersResult = await query(`SELECT COUNT(*) as count FROM users`);
+    const count = parseInt(usersResult.rows[0].count, 10);
+    const is_auth_setup = count > 0;
 
-  if (!req.userId) {
-    return res.json({ is_auth_setup, is_setup: false });
+    if (!req.userId) {
+      return res.json({ is_auth_setup, is_setup: false });
+    }
+
+    const result = await query(`SELECT * FROM users WHERE id = $1`, [req.userId]);
+    const user = result.rows[0];
+    if (!user) return res.json({ is_auth_setup, is_setup: false });
+
+    const is_setup = !!(user.partner_a && user.partner_b);
+    res.json({ is_auth_setup, is_setup, partner_a: user.partner_a, partner_b: user.partner_b });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
   }
-
-  const result = await query(`SELECT * FROM users WHERE id = $1`, [req.userId]);
-  const user = result.rows[0];
-  if (!user) return res.json({ is_auth_setup, is_setup: false });
-
-  const is_setup = !!(user.partner_a && user.partner_b);
-  res.json({ is_auth_setup, is_setup, partner_a: user.partner_a, partner_b: user.partner_b });
 });
 
 router.post('/', async (req, res) => {

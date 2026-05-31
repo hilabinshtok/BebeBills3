@@ -19,11 +19,16 @@ router.post('/signup', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  const result = await query(`SELECT * FROM users WHERE username = $1`, [username]);
-  const user = result.rows[0];
-  if (!user || user.password !== password) return res.status(401).json({ error: 'Invalid credentials' });
-  res.json({ ok: true, user_id: user.id, username: user.username, partner_a: user.partner_a, partner_b: user.partner_b });
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
+    const result = await query(`SELECT * FROM users WHERE username = $1`, [username]);
+    const user = result.rows[0];
+    if (!user || user.password !== password) return res.status(401).json({ error: 'Invalid credentials' });
+    res.json({ ok: true, user_id: user.id, username: user.username, partner_a: user.partner_a, partner_b: user.partner_b });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 router.post('/change-password', async (req, res) => {
