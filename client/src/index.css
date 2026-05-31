@@ -17,6 +17,7 @@
 html, body {
   min-height: 100vh;
   background: #0C213F;
+  overflow-x: hidden;
 }
 
 body {
@@ -127,18 +128,39 @@ input:focus, select:focus {
   outline: 2px solid black;
 }
 
+/* ─── Landing shell (login/signup page) ─── */
+.landing-shell {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  background-image: url('/receipt.jpg');
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+}
+
+/* On desktop: keep it phone-width and centered */
+@media (min-width: 430px) {
+  .landing-shell {
+    max-width: 390px;
+    margin: 0 auto;
+  }
+}
+
 /* ─── Auth / Landing ─── */
 .landing {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 40px 0;
+  padding: 24px 16px;
 }
 
 .landing-panel {
   border: 1px solid black;
   padding: 20px;
-  background: white;
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .landing-panel h2 {
@@ -149,6 +171,19 @@ input:focus, select:focus {
 .landing-panel.dimmed {
   opacity: 0.35;
   pointer-events: none;
+}
+
+/* On mobile: panels go edge-to-edge, no side padding */
+@media (max-width: 429px) {
+  .landing {
+    padding: 24px 0;
+    gap: 16px;
+  }
+
+  .landing-panel {
+    border-left: none;
+    border-right: none;
+  }
 }
 
 .form-field {

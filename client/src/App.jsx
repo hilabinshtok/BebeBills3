@@ -36,7 +36,17 @@ export default function App() {
     return <Shell session={session} settings={settings} onLogout={handleLogout} onSettingsChange={setSettings} />;
   }
 
-  return <LandingPage settings={settings} onLogin={handleLogin} />;
+  return (
+    <div className="landing-shell">
+      <header className="app-header">
+        <h1>BebeBills3</h1>
+      </header>
+      <LandingPage settings={settings} onLogin={handleLogin} />
+      <footer className="app-footer">
+        <span>welcome</span>
+      </footer>
+    </div>
+  );
 }
 
 function LandingPage({ settings, onLogin }) {
