@@ -41,22 +41,16 @@ body {
 }
 
 /* ─── Mobile: full-width cover background, fixed header/footer ─── */
-@media (max-width: 429px) {
-  .app-shell {
-    background: transparent;
-    position: relative;
-  }
-
-  /* Fixed background layer that always fills the viewport */
-  .app-shell::before {
-    content: '';
-    position: fixed;
-    inset: 0;
+@media (max-width: 767px) {
+  body {
     background-image: url('/receipt.jpg');
     background-size: 100% auto;
     background-position: center top;
     background-repeat: no-repeat;
-    z-index: 0;
+  }
+
+  .app-shell {
+    background: transparent;
   }
 
   .app-header {
@@ -76,10 +70,8 @@ body {
   }
 
   .app-main {
-    position: relative;
-    z-index: 1;
-    padding-top: calc(16px + 44px);   /* existing padding + fixed header height */
-    padding-bottom: calc(16px + 44px); /* existing padding + fixed footer height */
+    padding-top: calc(16px + 44px);
+    padding-bottom: calc(16px + 44px);
   }
 }
 
