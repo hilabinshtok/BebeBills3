@@ -40,53 +40,6 @@ body {
   background-repeat: no-repeat;
 }
 
-/* ─── Mobile: full-width background, fixed header/footer, dynamic viewport ─── */
-@media (max-width: 767px) {
-  /* Use 100dvh so the shell always matches the *visible* viewport,
-     shrinking/growing with the browser address bar */
-  html, body {
-    min-height: 100dvh;
-  }
-
-  body {
-    /* Background on body = always 100% of the real screen width, no side gaps */
-    background-image: url('/receipt.jpg');
-    background-size: 100vw auto;   /* exactly full screen width, height proportional */
-    background-position: center top;
-    background-repeat: no-repeat;
-  }
-
-  .app-shell {
-    background: transparent;
-    min-height: 100dvh;            /* shell fills the dynamic viewport */
-  }
-
-  /* Header pinned to top of visual viewport */
-  .app-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 10;
-  }
-
-  /* Footer pinned to bottom of visual viewport.
-     env(safe-area-inset-bottom) adds extra space for iPhone home-bar. */
-  .app-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 10;
-    padding-bottom: max(10px, env(safe-area-inset-bottom));
-  }
-
-  /* Push main content clear of both fixed bars */
-  .app-main {
-    padding-top: calc(16px + 44px);
-    padding-bottom: calc(16px + 60px); /* slightly more for safe area */
-  }
-}
 
 /* ─── Header ─── */
 .app-header {
@@ -417,4 +370,53 @@ input:focus, select:focus {
 .note-text {
   font-size: 12px;
   color: #555;
+}
+
+/* ─── Mobile: full-width background, fixed header/footer, dynamic viewport ─── */
+/* Placed at the END of the file so these rules always win over base styles above */
+@media (max-width: 767px) {
+  /* 100dvh tracks the *visible* viewport, shrinking/growing with the address bar */
+  html, body {
+    min-height: 100dvh;
+  }
+
+  body {
+    /* background-size: 100vw auto = exactly screen width, no side gaps ever */
+    background-image: url('/receipt.jpg');
+    background-size: 100vw auto;
+    background-position: center top;
+    background-repeat: no-repeat;
+  }
+
+  .app-shell {
+    background: transparent;
+    min-height: 100dvh;
+  }
+
+  /* Header locked to top of visible viewport */
+  .app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+  }
+
+  /* Footer locked to bottom of visible viewport.
+     env(safe-area-inset-bottom) adds room for iPhone home indicator. */
+  .app-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+  }
+
+  /* Pad main so content is never hidden under the fixed header or footer.
+     Header ~44px + 16px gap on top; footer ~44px + safe-area on bottom. */
+  .app-main {
+    padding-top: calc(44px + 16px);
+    padding-bottom: calc(44px + 16px);
+  }
 }
