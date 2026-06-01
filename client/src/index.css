@@ -50,6 +50,7 @@ body {
   background: #0C213F;
   border-bottom: none;
   color: white;
+  font-size: 14px;
 }
 
 .app-header h1 {
@@ -61,7 +62,7 @@ body {
 /* ─── Main content — sits inside the white paper area ─── */
 .app-main {
   flex: 1;
-  padding: 16px 3%;
+  padding: 16px 2%;
   background: transparent;
 }
 
@@ -74,6 +75,7 @@ body {
   background: #0C213F;
   border-top: none;
   color: white;
+  font-size: 14px;
 }
 
 /* ─── Buttons (default: light context) ─── */
@@ -97,7 +99,7 @@ button.link-btn {
   background: none;
   text-decoration: underline;
   color: inherit;
-  font-size: 10px;
+  font-size: inherit;
 }
 
 button.link-btn:hover {
@@ -245,11 +247,11 @@ input:focus, select:focus {
   word-break: break-word;
 }
 
-.expense-table col.col-desc    { width: 24%; }
+.expense-table col.col-desc    { width: 26%; }
 .expense-table col.col-paid    { width: 8%; }
 .expense-table col.col-amount  { width: 14%; }
-.expense-table col.col-owes    { width: 24%; }
-.expense-table col.col-date    { width: 18%; }
+.expense-table col.col-owes    { width: 22%; }
+.expense-table col.col-date    { width: 20%; }
 .expense-table col.col-actions { width: 10%; }
 
 .row-toggle {
@@ -378,7 +380,7 @@ input:focus, select:focus {
   padding: 5px 7px;
   font-size: 11px;
   line-height: 1.5;
-  background: rgba(255,255,255,0.75);
+  background: transparent;
 }
 
 .settlement-table-balance {
@@ -386,10 +388,10 @@ input:focus, select:focus {
   margin-top: 2px;
 }
 
-/* ─── Owes column hidden: slightly bigger table font ─── */
+/* ─── Owes column hidden: bigger table font ─── */
 .owes-hidden .expense-table th,
 .owes-hidden .expense-table td {
-  font-size: 13px;
+  font-size: 14px;
 }
 
 /* ─── Mobile: full-width background, fixed header/footer, dynamic viewport ─── */
