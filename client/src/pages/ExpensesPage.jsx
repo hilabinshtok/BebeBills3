@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useExpenses, useCreateExpense, useUpdateExpense, useDeleteExpense } from '../hooks/useExpenses';
+import { useSettlements } from '../hooks/useSettlements';
+import { useBalance } from '../hooks/useBalance';
 import ExpenseForm from './ExpenseForm';
 
 function fmt(n) {
@@ -11,6 +13,12 @@ function fmtDate(d) {
   if (!d) return '—';
   const [y, m, day] = d.split('-');
   return `${day}.${m}.${y.slice(2)}`;
+}
+
+function balanceLabel(balance) {
+  if (!balance) return '…';
+  if (balance.settled) return 'All settled ✓';
+  return `${balance.owes_name} owes ${balance.owes_to} $${balance.amount.toFixed(2)}`;
 }
 
 function calcLeafContribution(exp, partnerA, partnerB) {
@@ -46,18 +54,23 @@ function ContribCell({ contrib }) {
   return <td>{shortName(contrib.from)}→{shortName(contrib.to)} {fmt(contrib.amount)}</td>;
 }
 
-export default function ExpensesPage({ session, settings }) {
+export default function ExpensesPage({ session, settings, showOwes }) {
   const { data: expenses = [], isLoading } = useExpenses();
+  const { data: settlements = [] } = useSettlements();
+  const { data: balance } = useBalance();
   const createExpense = useCreateExpense();
   const updateExpense = useUpdateExpense();
   const deleteExpense = useDeleteExpense();
 
   const [expanded, setExpanded] = useState({});
-  const [addForm, setAddForm] = useState(null); // null | { parent_id: null|number }
-  const [editForm, setEditForm] = useState(null); // null | expense row
+  const [addForm, setAddForm] = useState(null);
+  const [editForm, setEditForm] = useState(null);
 
   const partnerA = settings?.partner_a || 'A';
   const partnerB = settings?.partner_b || 'B';
+
+  // Total columns depends on owes visibility
+  const colCount = showOwes ? 6 : 5;
 
   function toggleExpand(id) {
     setExpanded(e => ({ ...e, [id]: !e[id] }));
@@ -73,7 +86,6 @@ export default function ExpensesPage({ session, settings }) {
       await updateExpense.mutateAsync({ id: editForm.id, ...data });
     } else {
       await createExpense.mutateAsync(data);
-      // Auto-expand parent if adding sub-item
       if (data.parent_id) {
         setExpanded(e => ({ ...e, [data.parent_id]: true }));
       }
@@ -86,14 +98,20 @@ export default function ExpensesPage({ session, settings }) {
 
   const isParent = (row) => row.items && row.items.length > 0;
 
+  // Merge expenses and settlements, sorted oldest → newest
+  const merged = [
+    ...expenses.map(e => ({ type: 'expense', data: e, sortDate: e.date || '0000-00-00' })),
+    ...settlements.map(s => ({ type: 'settlement', data: s, sortDate: s.date || '0000-00-00' })),
+  ].sort((a, b) => a.sortDate.localeCompare(b.sortDate));
+
   return (
-    <div>
+    <div className={showOwes ? '' : 'owes-hidden'}>
       <table className="expense-table">
         <colgroup>
           <col className="col-desc" />
           <col className="col-paid" />
           <col className="col-amount" />
-          <col className="col-owes" />
+          {showOwes && <col className="col-owes" />}
           <col className="col-date" />
           <col className="col-actions" />
         </colgroup>
@@ -102,13 +120,31 @@ export default function ExpensesPage({ session, settings }) {
             <th>Description</th>
             <th>By</th>
             <th>Amount</th>
-            <th>Owes</th>
-            <th className="hide-mobile">Date</th>
+            {showOwes && <th>Owes</th>}
+            <th>Date</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-          {expenses.map(row => {
+          {merged.map((item, idx) => {
+            if (item.type === 'settlement') {
+              const s = item.data;
+              return (
+                <tr key={`settlement-${s.id}`}>
+                  <td colSpan={colCount} style={{ padding: '6px 0' }}>
+                    <div className="settlement-table-box">
+                      <div>
+                        Settlement: {s.from_name} → {s.to_name}, ${parseFloat(s.amount).toFixed(2)}, on {fmtDate(s.date)}
+                        {s.note ? `, ${s.note}` : ''}
+                      </div>
+                      <div className="settlement-table-balance">{balanceLabel(balance)}</div>
+                    </div>
+                  </td>
+                </tr>
+              );
+            }
+
+            const row = item.data;
             const hasChildren = isParent(row);
             const isExpanded = expanded[row.id];
             const totalAmount = hasChildren
@@ -132,8 +168,8 @@ export default function ExpensesPage({ session, settings }) {
                   </td>
                   <td>{paidBy || '—'}</td>
                   <td>{fmt(totalAmount)}</td>
-                  <ContribCell contrib={contrib} />
-                  <td className="hide-mobile">{hasChildren ? '—' : fmtDate(row.date)}</td>
+                  {showOwes && <ContribCell contrib={contrib} />}
+                  <td>{hasChildren ? '—' : fmtDate(row.date)}</td>
                   <td>
                     <button className="link-btn" onClick={() => setEditForm(row)}>✏</button>
                     {' '}
@@ -150,8 +186,8 @@ export default function ExpensesPage({ session, settings }) {
                           <td>{sub.description}</td>
                           <td>{sub.paid_by || '—'}</td>
                           <td>{fmt(sub.amount)}</td>
-                          <ContribCell contrib={subContrib} />
-                          <td className="hide-mobile">{fmtDate(sub.date)}</td>
+                          {showOwes && <ContribCell contrib={subContrib} />}
+                          <td>{fmtDate(sub.date)}</td>
                           <td>
                             <button className="link-btn" onClick={() => setEditForm(sub)}>✏</button>
                             {' '}
@@ -161,7 +197,7 @@ export default function ExpensesPage({ session, settings }) {
                       );
                     })}
                     <tr className="add-subitem-row">
-                      <td colSpan={6}>
+                      <td colSpan={colCount}>
                         <button className="link-btn" onClick={() => setAddForm({ parent_id: row.id })}>
                           + sub-item
                         </button>

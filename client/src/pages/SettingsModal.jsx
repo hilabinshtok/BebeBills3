@@ -4,7 +4,7 @@ import { api } from '../api';
 import { useSettlements, useCreateSettlement, useDeleteSettlement } from '../hooks/useSettlements';
 import { useBalance } from '../hooks/useBalance';
 
-export default function SettingsModal({ session, settings, onClose, onLogout, onSettingsChange }) {
+export default function SettingsModal({ session, settings, onClose, onLogout, onSettingsChange, showOwes, onToggleOwes }) {
   const qc = useQueryClient();
   const [partnerA, setPartnerA] = useState(settings?.partner_a || '');
   const [partnerB, setPartnerB] = useState(settings?.partner_b || '');
@@ -175,6 +175,17 @@ export default function SettingsModal({ session, settings, onClose, onLogout, on
               ))}
             </div>
           )}
+        </div>
+
+        {/* Display */}
+        <div className="modal-section">
+          <h3>Display</h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span>Owes column</span>
+            <button onClick={onToggleOwes} style={{ minWidth: 44 }}>
+              {showOwes ? 'ON' : 'OFF'}
+            </button>
+          </div>
         </div>
 
         {/* Data */}

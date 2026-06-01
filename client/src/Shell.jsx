@@ -8,18 +8,29 @@ export default function Shell({ session, settings, onLogout, onSettingsChange })
   const { data: balance } = useBalance();
   const [showSettings, setShowSettings] = useState(false);
 
+  // Persisted display preference: show/hide the Owes column
+  const [showOwes, setShowOwes] = useState(() => {
+    try { return localStorage.getItem('showOwes') !== 'false'; } catch { return true; }
+  });
+
   // Auto-open settings if partners not set up
   useEffect(() => {
     if (settings && !settings.is_setup) setShowSettings(true);
   }, [settings?.is_setup]);
+
+  function toggleShowOwes() {
+    setShowOwes(v => {
+      const next = !v;
+      try { localStorage.setItem('showOwes', String(next)); } catch {}
+      return next;
+    });
+  }
 
   function balanceText() {
     if (!balance) return '…';
     if (balance.settled) return 'All settled ✓';
     return `${balance.owes_name} owes ${balance.owes_to} $${balance.amount.toFixed(2)}`;
   }
-
-  const partnerName = session.partner_a || session.username;
 
   return (
     <div className="app-shell">
@@ -28,7 +39,7 @@ export default function Shell({ session, settings, onLogout, onSettingsChange })
       </header>
 
       <main className="app-main">
-        <ExpensesPage session={session} settings={settings} />
+        <ExpensesPage session={session} settings={settings} showOwes={showOwes} />
       </main>
 
       <footer className="app-footer">
@@ -43,6 +54,8 @@ export default function Shell({ session, settings, onLogout, onSettingsChange })
           onClose={() => setShowSettings(false)}
           onLogout={onLogout}
           onSettingsChange={onSettingsChange}
+          showOwes={showOwes}
+          onToggleOwes={toggleShowOwes}
         />
       )}
     </div>
