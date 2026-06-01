@@ -40,19 +40,28 @@ body {
   background-repeat: no-repeat;
 }
 
-/* ─── Mobile: full-width cover background, fixed header/footer ─── */
+/* ─── Mobile: full-width background, fixed header/footer, dynamic viewport ─── */
 @media (max-width: 767px) {
+  /* Use 100dvh so the shell always matches the *visible* viewport,
+     shrinking/growing with the browser address bar */
+  html, body {
+    min-height: 100dvh;
+  }
+
   body {
+    /* Background on body = always 100% of the real screen width, no side gaps */
     background-image: url('/receipt.jpg');
-    background-size: 100% auto;
+    background-size: 100vw auto;   /* exactly full screen width, height proportional */
     background-position: center top;
     background-repeat: no-repeat;
   }
 
   .app-shell {
     background: transparent;
+    min-height: 100dvh;            /* shell fills the dynamic viewport */
   }
 
+  /* Header pinned to top of visual viewport */
   .app-header {
     position: fixed;
     top: 0;
@@ -61,17 +70,21 @@ body {
     z-index: 10;
   }
 
+  /* Footer pinned to bottom of visual viewport.
+     env(safe-area-inset-bottom) adds extra space for iPhone home-bar. */
   .app-footer {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     z-index: 10;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
   }
 
+  /* Push main content clear of both fixed bars */
   .app-main {
     padding-top: calc(16px + 44px);
-    padding-bottom: calc(16px + 44px);
+    padding-bottom: calc(16px + 60px); /* slightly more for safe area */
   }
 }
 
