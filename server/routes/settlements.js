@@ -10,12 +10,12 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
   if (!req.userId) return res.status(401).json({ error: 'Not authenticated' });
-  const { from_name, to_name, amount, note, date } = req.body;
+  const { from_name, to_name, amount, note, date, balance_snapshot } = req.body;
   if (!from_name || !to_name || !amount || !date) return res.status(400).json({ error: 'Missing required fields' });
   const now = new Date().toISOString();
   const result = await query(
-    `INSERT INTO settlements (user_id, from_name, to_name, amount, note, date, created_at) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
-    [req.userId, from_name, to_name, amount, note || null, date, now]
+    `INSERT INTO settlements (user_id, from_name, to_name, amount, note, date, balance_snapshot, created_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
+    [req.userId, from_name, to_name, amount, note || null, date, balance_snapshot || null, now]
   );
   res.json(result.rows[0]);
 });

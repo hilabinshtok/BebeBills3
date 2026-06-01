@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useExpenses, useCreateExpense, useUpdateExpense, useDeleteExpense } from '../hooks/useExpenses';
 import { useSettlements } from '../hooks/useSettlements';
-import { useBalance } from '../hooks/useBalance';
 import ExpenseForm from './ExpenseForm';
 
 function fmt(n) {
@@ -15,11 +14,6 @@ function fmtDate(d) {
   return `${day}.${m}.${y.slice(2)}`;
 }
 
-function balanceLabel(balance) {
-  if (!balance) return '…';
-  if (balance.settled) return 'All settled ✓';
-  return `${balance.owes_name} owes ${balance.owes_to} $${balance.amount.toFixed(2)}`;
-}
 
 function calcLeafContribution(exp, partnerA, partnerB) {
   if (exp.amount == null) return null;
@@ -57,7 +51,6 @@ function ContribCell({ contrib }) {
 export default function ExpensesPage({ session, settings, showOwes }) {
   const { data: expenses = [], isLoading } = useExpenses();
   const { data: settlements = [] } = useSettlements();
-  const { data: balance } = useBalance();
   const createExpense = useCreateExpense();
   const updateExpense = useUpdateExpense();
   const deleteExpense = useDeleteExpense();
@@ -137,7 +130,9 @@ export default function ExpensesPage({ session, settings, showOwes }) {
                         Settlement: {s.from_name} → {s.to_name}, ${parseFloat(s.amount).toFixed(2)}, on {fmtDate(s.date)}
                         {s.note ? `, ${s.note}` : ''}
                       </div>
-                      <div className="settlement-table-balance">{balanceLabel(balance)}</div>
+                      {s.balance_snapshot && (
+                        <div className="settlement-table-balance">{s.balance_snapshot}</div>
+                      )}
                     </div>
                   </td>
                 </tr>

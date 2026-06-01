@@ -46,7 +46,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 3%;
+  padding: 10px 5%;
   background: #0C213F;
   border-bottom: none;
   color: white;
@@ -70,7 +70,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 3%;
+  padding: 10px 5%;
   background: #0C213F;
   border-top: none;
   color: white;
@@ -245,10 +245,10 @@ input:focus, select:focus {
   word-break: break-word;
 }
 
-.expense-table col.col-desc    { width: 30%; }
+.expense-table col.col-desc    { width: 24%; }
 .expense-table col.col-paid    { width: 8%; }
 .expense-table col.col-amount  { width: 14%; }
-.expense-table col.col-owes    { width: 18%; }
+.expense-table col.col-owes    { width: 24%; }
 .expense-table col.col-date    { width: 18%; }
 .expense-table col.col-actions { width: 10%; }
 

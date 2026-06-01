@@ -78,6 +78,13 @@ export default function SettingsModal({ session, settings, onClose, onLogout, on
     e.target.value = '';
   }
 
+  // Build balance text the same way the footer does
+  function currentBalanceSnapshot() {
+    if (!balance) return null;
+    if (balance.settled) return 'All settled ✓';
+    return `${balance.owes_name} owes ${balance.owes_to} $${balance.amount.toFixed(2)}`;
+  }
+
   async function handleSettle(e) {
     e.preventDefault();
     setSettleMsg('');
@@ -88,7 +95,8 @@ export default function SettingsModal({ session, settings, onClose, onLogout, on
         to_name: settleForm.to_name,
         amount: parseFloat(settleForm.amount),
         note: settleForm.note || undefined,
-        date: settleForm.date
+        date: settleForm.date,
+        balance_snapshot: currentBalanceSnapshot()
       });
       setSettleMsg('Recorded!');
       setTimeout(() => setSettleMsg(''), 2000);

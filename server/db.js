@@ -175,6 +175,17 @@ async function initDb() {
   await exec(createUsers);
   await exec(createExpenses);
   await exec(createSettlements);
+
+  // Migration: add balance_snapshot column to settlements if not yet present
+  try {
+    if (isPg) {
+      await exec(`ALTER TABLE settlements ADD COLUMN IF NOT EXISTS balance_snapshot TEXT`);
+    } else {
+      await exec(`ALTER TABLE settlements ADD COLUMN balance_snapshot TEXT`);
+    }
+  } catch (e) {
+    // Column already exists — safe to ignore
+  }
 }
 
 module.exports = { query, exec, initDb, isPg };
