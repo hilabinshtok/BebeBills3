@@ -62,7 +62,7 @@ body {
 /* ─── Main content — sits inside the white paper area ─── */
 .app-main {
   flex: 1;
-  padding: 16px 2%;
+  padding: 16px 0.5%;
   background: transparent;
 }
 
@@ -251,8 +251,8 @@ input:focus, select:focus {
 .expense-table col.col-paid    { width: 8%; }
 .expense-table col.col-amount  { width: 14%; }
 .expense-table col.col-owes    { width: 22%; }
-.expense-table col.col-date    { width: 20%; }
-.expense-table col.col-actions { width: 10%; }
+.expense-table col.col-date    { width: 16%; }
+.expense-table col.col-actions { width: 14%; }
 
 .row-toggle {
   border: none;
@@ -440,5 +440,7 @@ input:focus, select:focus {
   .app-main {
     padding-top: calc(44px + 16px);
     padding-bottom: calc(44px + 16px);
+    padding-left: 0.5%;
+    padding-right: 0.5%;
   }
 }

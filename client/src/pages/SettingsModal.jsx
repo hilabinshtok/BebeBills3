@@ -78,17 +78,45 @@ export default function SettingsModal({ session, settings, onClose, onLogout, on
     e.target.value = '';
   }
 
-  // Build balance text the same way the footer does
-  function currentBalanceSnapshot() {
-    if (!balance) return null;
-    if (balance.settled) return 'All settled ✓';
-    return `${balance.owes_name} owes ${balance.owes_to} $${balance.amount.toFixed(2)}`;
+  // Compute what the balance will be AFTER this settlement is applied
+  function balanceAfterSettlement(form) {
+    const amt = parseFloat(form.amount);
+    if (!balance || !(amt > 0)) return null;
+
+    if (balance.settled) {
+      // Was all settled; payment in this direction creates a reverse credit
+      return amt < 0.005 ? 'All settled ✓' : `${form.to_name} owes ${form.from_name} $${amt.toFixed(2)}`;
+    }
+
+    const { owes_name, owes_to, amount: cur } = balance;
+    const from = form.from_name;
+    const to = form.to_name;
+
+    let remaining, debtor, creditor;
+    if (from === owes_name && to === owes_to) {
+      // Paying in the correct direction — reduces debt
+      remaining = cur - amt;
+      debtor = owes_name; creditor = owes_to;
+    } else if (from === owes_to && to === owes_name) {
+      // Paying in reverse — increases debt
+      remaining = -(cur + amt);
+      debtor = owes_name; creditor = owes_to;
+    } else {
+      // Names don't match known partners, keep current label
+      return `${owes_name} owes ${owes_to} $${cur.toFixed(2)}`;
+    }
+
+    if (Math.abs(remaining) < 0.005) return 'All settled ✓';
+    if (remaining > 0) return `${debtor} owes ${creditor} $${remaining.toFixed(2)}`;
+    return `${creditor} owes ${debtor} $${Math.abs(remaining).toFixed(2)}`;
   }
 
   async function handleSettle(e) {
     e.preventDefault();
     setSettleMsg('');
     if (!settleForm.amount || parseFloat(settleForm.amount) <= 0) { setSettleMsg('Amount required'); return; }
+    // Compute the post-settlement balance before the mutation changes the cache
+    const snapshot = balanceAfterSettlement(settleForm);
     try {
       await createSettlement.mutateAsync({
         from_name: settleForm.from_name,
@@ -96,7 +124,7 @@ export default function SettingsModal({ session, settings, onClose, onLogout, on
         amount: parseFloat(settleForm.amount),
         note: settleForm.note || undefined,
         date: settleForm.date,
-        balance_snapshot: currentBalanceSnapshot()
+        balance_snapshot: snapshot
       });
       setSettleMsg('Recorded!');
       setTimeout(() => setSettleMsg(''), 2000);
